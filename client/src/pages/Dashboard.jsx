@@ -26,7 +26,7 @@ function Dashboard() {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        "http://taskflow-mern-project.onrender.com/api/tasks",
+        "https://taskflow-mern-project.onrender.com/api/tasks",
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -25,7 +25,7 @@ function Register() {
 
     try {
       await axios.post(
-        "http://taskflow-mern-project.onrender.com/api/auth/register",
+        "https://taskflow-mern-project.onrender.com/api/auth/register",
         formData
       );
 
