@@ -25,7 +25,7 @@ function Register() {
 
     try {
       await axios.post(
-        "https://taskflow-mern-project.vercel.app/api/auth/register",
+        "https://taskflow-mern-project.onrender.com/api/auth/register",
         formData
       );
 
