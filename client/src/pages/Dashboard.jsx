@@ -38,7 +38,7 @@ function Dashboard() {
   const addTask = async () => {
     try {
       await axios.post(
-        https://taskflow-mern-project.onrender.com/api/tasks/,
+        "https://taskflow-mern-project.onrender.com/api/tasks",
         {
           title,
           description,
@@ -60,13 +60,11 @@ function Dashboard() {
     }
   };
 
-  const deleteTask = async (id) => {
-    try {
-      await axios.delete(`$https://taskflow-mern-project.onrender.com/api/tasks/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  await axios.delete(`${API_URL}/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
       fetchTasks();
     } catch (error) {
