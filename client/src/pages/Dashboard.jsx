@@ -38,11 +38,17 @@ function Dashboard() {
   const addTask = async () => {
     try {
       await axios.post(
-        "https://taskflow-mern-project.onrender.com/api/tasks",
+        API_URL,
         {
           title,
           description,
         },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
         {
           headers: {
             Authorization: `Bearer ${token}`,
