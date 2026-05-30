@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
-
 import axios from "axios";
+
+const API_URL = "https://taskflow-mern-project.onrender.com/api";
 
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
-
   const [title, setTitle] = useState("");
-
   const [description, setDescription] = useState("");
 
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!token) {
       navigate("/");
+      return;
     }
 
     fetchTasks();
@@ -25,25 +23,27 @@ function Dashboard() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(
-        "https://taskflow-mern-project.onrender.com/api/tasks",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/tasks`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setTasks(response.data);
     } catch (error) {
-      console.log(error);
+      console.log("Fetch Tasks Error:", error);
     }
   };
 
   const addTask = async () => {
+    if (!title || !description) {
+      alert("Please fill all fields");
+      return;
+    }
+
     try {
       await axios.post(
-        "http://localhost:5000/api/tasks",
+        `${API_URL}/tasks`,
         {
           title,
           description,
@@ -56,36 +56,33 @@ function Dashboard() {
       );
 
       setTitle("");
-
       setDescription("");
 
       fetchTasks();
     } catch (error) {
-      console.log(error);
+      console.log("Add Task Error:", error);
+      alert("Failed to add task");
     }
   };
 
   const deleteTask = async (id) => {
     try {
-      await axios.delete(
-        `http://localhost:5000/api/tasks/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`${API_URL}/tasks/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       fetchTasks();
     } catch (error) {
-      console.log(error);
+      console.log("Delete Task Error:", error);
+      alert("Failed to delete task");
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex">
       {/* Sidebar */}
-
       <div className="w-64 bg-gray-800 p-5">
         <h1 className="text-2xl font-bold mb-8">
           TaskFlow
@@ -93,18 +90,14 @@ function Dashboard() {
 
         <ul className="space-y-4">
           <li>Dashboard</li>
-
           <li>My Tasks</li>
-
           <li>Completed</li>
-
           <li>Profile</li>
         </ul>
 
         <button
           onClick={() => {
             localStorage.removeItem("token");
-
             window.location.href = "/";
           }}
           className="bg-red-500 px-4 py-2 rounded mt-8"
@@ -114,14 +107,12 @@ function Dashboard() {
       </div>
 
       {/* Main Content */}
-
       <div className="flex-1 p-8">
         <h2 className="text-3xl font-bold mb-6">
           Welcome Back 🚀
         </h2>
 
         {/* Add Task */}
-
         <div className="bg-gray-800 p-5 rounded mb-8">
           <h3 className="text-xl mb-4">Add Task</h3>
 
@@ -137,9 +128,7 @@ function Dashboard() {
             placeholder="Task Description"
             className="w-full p-3 mb-3 rounded bg-gray-700"
             value={description}
-            onChange={(e) =>
-              setDescription(e.target.value)
-            }
+            onChange={(e) => setDescription(e.target.value)}
           />
 
           <button
@@ -151,31 +140,32 @@ function Dashboard() {
         </div>
 
         {/* Tasks */}
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {tasks.map((task) => (
-            <div
-              key={task._id}
-              className="bg-gray-800 p-5 rounded"
-            >
-              <h3 className="text-xl font-bold">
-                {task.title}
-              </h3>
-
-              <p className="mt-2 text-gray-300">
-                {task.description}
-              </p>
-
-              <button
-                onClick={() =>
-                  deleteTask(task._id)
-                }
-                className="bg-red-500 px-4 py-2 rounded mt-4"
+          {tasks.length > 0 ? (
+            tasks.map((task) => (
+              <div
+                key={task._id}
+                className="bg-gray-800 p-5 rounded"
               >
-                Delete
-              </button>
-            </div>
-          ))}
+                <h3 className="text-xl font-bold">
+                  {task.title}
+                </h3>
+
+                <p className="mt-2 text-gray-300">
+                  {task.description}
+                </p>
+
+                <button
+                  onClick={() => deleteTask(task._id)}
+                  className="bg-red-500 px-4 py-2 rounded mt-4"
+                >
+                  Delete
+                </button>
+              </div>
+            ))
+          ) : (
+            <p>No tasks found.</p>
+          )}
         </div>
       </div>
     </div>
