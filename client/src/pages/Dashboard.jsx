@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_URL = "https://taskflow-mern-project.onrender.com/api";
+const API_URL = "https://taskflow-mern-project.onrender.com/api/tasks";
 
 function Dashboard() {
   const [tasks, setTasks] = useState([]);
@@ -23,7 +23,7 @@ function Dashboard() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`$https://taskflow-mern-project.onrender.com/api/tasks`, {
+      const response = await axios.get(API_URL, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -31,19 +31,14 @@ function Dashboard() {
 
       setTasks(response.data);
     } catch (error) {
-      console.log("Fetch Tasks Error:", error);
+      console.log("Fetch Error:", error);
     }
   };
 
   const addTask = async () => {
-    if (!title || !description) {
-      alert("Please fill all fields");
-      return;
-    }
-
     try {
       await axios.post(
-        `$https://taskflow-mern-project.onrender.com/api/tasks`,
+        https://taskflow-mern-project.onrender.com/api/tasks/,
         {
           title,
           description,
@@ -67,7 +62,7 @@ function Dashboard() {
 
   const deleteTask = async (id) => {
     try {
-      await axios.delete(`$https://taskflow-mern-project.onrender.com/api/task/${id}`, {
+      await axios.delete(`$https://taskflow-mern-project.onrender.com/api/tasks/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -75,99 +70,48 @@ function Dashboard() {
 
       fetchTasks();
     } catch (error) {
-      console.log("Delete Task Error:", error);
+      console.log("Delete Error:", error);
       alert("Failed to delete task");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex">
-      {/* Sidebar */}
-      <div className="w-64 bg-gray-800 p-5">
-        <h1 className="text-2xl font-bold mb-8">
-          TaskFlow
-        </h1>
+    <div>
+      <h1>TaskFlow</h1>
 
-        <ul className="space-y-4">
-          <li>Dashboard</li>
-          <li>My Tasks</li>
-          <li>Completed</li>
-          <li>Profile</li>
-        </ul>
+      <input
+        type="text"
+        placeholder="Task Title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
 
-        <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            window.location.href = "/";
-          }}
-          className="bg-red-500 px-4 py-2 rounded mt-8"
-        >
-          Logout
-        </button>
-      </div>
+      <textarea
+        placeholder="Task Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
 
-      {/* Main Content */}
-      <div className="flex-1 p-8">
-        <h2 className="text-3xl font-bold mb-6">
-          Welcome Back 🚀
-        </h2>
+      <button onClick={addTask}>
+        Add Task
+      </button>
 
-        {/* Add Task */}
-        <div className="bg-gray-800 p-5 rounded mb-8">
-          <h3 className="text-xl mb-4">Add Task</h3>
+      {tasks.length === 0 ? (
+        <p>No tasks found.</p>
+      ) : (
+        tasks.map((task) => (
+          <div key={task._id}>
+            <h3>{task.title}</h3>
+            <p>{task.description}</p>
 
-          <input
-            type="text"
-            placeholder="Task Title"
-            className="w-full p-3 mb-3 rounded bg-gray-700"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-
-          <textarea
-            placeholder="Task Description"
-            className="w-full p-3 mb-3 rounded bg-gray-700"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-
-          <button
-            onClick={addTask}
-            className="bg-blue-500 px-5 py-2 rounded"
-          >
-            Add Task
-          </button>
-        </div>
-
-        {/* Tasks */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {tasks.length > 0 ? (
-            tasks.map((task) => (
-              <div
-                key={task._id}
-                className="bg-gray-800 p-5 rounded"
-              >
-                <h3 className="text-xl font-bold">
-                  {task.title}
-                </h3>
-
-                <p className="mt-2 text-gray-300">
-                  {task.description}
-                </p>
-
-                <button
-                  onClick={() => deleteTask(task._id)}
-                  className="bg-red-500 px-4 py-2 rounded mt-4"
-                >
-                  Delete
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>No tasks found.</p>
-          )}
-        </div>
-      </div>
+            <button
+              onClick={() => deleteTask(task._id)}
+            >
+              Delete
+            </button>
+          </div>
+        ))
+      )}
     </div>
   );
 }
