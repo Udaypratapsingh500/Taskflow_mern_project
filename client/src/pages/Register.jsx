@@ -1,76 +1,94 @@
-// client/src/pages/Register.jsx
-
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
 
 function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleRegister = async () => {
+    if (!name || !email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
 
     try {
-      await axios.post(
+      const response = await axios.post(
         "https://taskflow-mern-project.onrender.com/api/auth/register",
-        formData
+        {
+          name,
+          email,
+          password,
+        }
       );
+
+      console.log(response.data);
+
+      alert("Registration Successful");
 
       navigate("/");
     } catch (error) {
-      console.log(error);
-      alert("Register Failed");
+      console.log(error.response?.data);
+
+      alert(
+        error.response?.data?.message ||
+          error.message ||
+          "Registration Failed"
+      );
     }
   };
 
   return (
-    <div>
-      <h1>Register</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-900">
+      <div className="bg-gray-800 p-8 rounded-lg w-96">
+        <h1 className="text-3xl text-white font-bold text-center mb-6">
+          Register
+        </h1>
 
-      <form onSubmit={handleSubmit}>
         <input
           type="text"
-          name="name"
-          placeholder="Name"
-          onChange={handleChange}
+          placeholder="Enter Name"
+          className="w-full p-3 mb-4 rounded bg-gray-700 text-white outline-none"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
 
         <input
           type="email"
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
+          placeholder="Enter Email"
+          className="w-full p-3 mb-4 rounded bg-gray-700 text-white outline-none"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
+          placeholder="Enter Password"
+          className="w-full p-3 mb-4 rounded bg-gray-700 text-white outline-none"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button type="submit">
+        <button
+          onClick={handleRegister}
+          className="bg-green-500 hover:bg-green-600 w-full py-3 rounded text-white"
+        >
           Register
         </button>
-      </form>
 
-      <p>
-        Already have an account?
-        <Link to="/"> Login</Link>
-      </p>
+        <p className="text-gray-300 text-center mt-4">
+          Already have an account?{" "}
+          <Link
+            to="/"
+            className="text-blue-400"
+          >
+            Login
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
