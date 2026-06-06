@@ -49,12 +49,6 @@ function Dashboard() {
           },
         }
       );
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
 
       setTitle("");
       setDescription("");
@@ -66,11 +60,13 @@ function Dashboard() {
     }
   };
 
-  await axios.delete(`${API_URL}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const deleteTask = async (id) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       fetchTasks();
     } catch (error) {
@@ -96,9 +92,7 @@ function Dashboard() {
         onChange={(e) => setDescription(e.target.value)}
       />
 
-      <button onClick={addTask}>
-        Add Task
-      </button>
+      <button onClick={addTask}>Add Task</button>
 
       {tasks.length === 0 ? (
         <p>No tasks found.</p>
@@ -108,9 +102,7 @@ function Dashboard() {
             <h3>{task.title}</h3>
             <p>{task.description}</p>
 
-            <button
-              onClick={() => deleteTask(task._id)}
-            >
+            <button onClick={() => deleteTask(task._id)}>
               Delete
             </button>
           </div>
